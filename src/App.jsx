@@ -299,6 +299,13 @@ export default function App() {
         <span>{ADDRESS}</span>
         <a href={TEL}>{PHONE}</a>
       </footer>
+      <div className="radcrafts-credit">
+        <span>&copy; 2026</span>
+        <a href="https://radcrafts.ca" target="_blank" rel="noopener">
+          <img src="/images/radcrafts-r.png" alt="" width="15" height="15" />
+          <span>RadCrafts</span>
+        </a>
+      </div>
     </>
   )
 }
