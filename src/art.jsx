@@ -33,9 +33,9 @@ export const BAGELS = {
 
 export const SPREADS = {
   none: { label: 'Rien', color: null },
-  creme: { label: 'Fromage à la crème', color: '#FFFDF2' },
+  creme: { label: 'Fromage à la crème', color: '#FBF5E8' },
   confiture: { label: 'Confiture de fraises', color: '#B01234' },
-  avocat: { label: 'Avocat écrasé', color: '#9DBF4B' },
+  avocat: { label: 'Avocat écrasé', color: '#93B548' },
 }
 
 export const TOPPINGS = {
@@ -46,12 +46,13 @@ export const TOPPINGS = {
   avocat: { label: 'Tranches d’avocat' },
 }
 
-const salmon = around(6, 15)
+const salmon = around(6, 15, 70)
+const dill = scatter(14, 31, 52, 92)
 const berries = around(7, 5, 74)
 const avos = around(8, 0, 72)
 const eggPos = around(1, -55, 72)[0]
 
-export function Bagel({ type = 'sesame', spread = 'creme', topping = 'saumon', spin = 0 }) {
+export function Bagel({ type = 'sesame', spread = 'creme', topping = 'saumon', spin = 0, plate = true, label = 'Bagel composé' }) {
   const uid = useId().replace(/:/g, '')
   const seeds = useMemo(() => scatter(type === 'pavot' ? 150 : 76, 11), [type])
   const specks = useMemo(() => scatter(40, 77), [])
@@ -60,8 +61,13 @@ export function Bagel({ type = 'sesame', spread = 'creme', topping = 'saumon', s
   const outer = `M${CX - 110} ${CY}a110 110 0 1 0 220 0a110 110 0 1 0 -220 0Z`
 
   return (
-    <svg viewBox="0 0 300 300" className="bagel-svg" role="img" aria-label="Bagel composé">
+    <svg viewBox="0 0 300 300" className="bagel-svg" role="img" aria-label={label}>
       <defs>
+        <radialGradient id={`${uid}p`} cx="45%" cy="40%" r="65%">
+          <stop offset="0" stopColor="#FBF9F4" />
+          <stop offset="0.8" stopColor="#F1ECE3" />
+          <stop offset="1" stopColor="#E2DACC" />
+        </radialGradient>
         <radialGradient id={`${uid}d`} cx="40%" cy="35%" r="75%">
           <stop offset="0" stopColor="#F1C072" />
           <stop offset="0.7" stopColor="#D58F3B" />
@@ -76,9 +82,13 @@ export function Bagel({ type = 'sesame', spread = 'creme', topping = 'saumon', s
         </filter>
       </defs>
 
-      <circle cx={CX} cy={CY} r="146" fill="#fff" />
-      <circle cx={CX} cy={CY} r="146" fill="none" stroke="#E6E3DC" strokeWidth="2" />
-      <circle cx={CX} cy={CY} r="128" fill="none" stroke="#EFECE5" strokeWidth="1.5" />
+      {plate && (
+        <g>
+          <circle cx={CX} cy={CY} r="146" fill={`url(#${uid}p)`} />
+          <circle cx={CX} cy={CY} r="146" fill="none" stroke="#D9D2C6" strokeWidth="1.5" />
+          <circle cx={CX} cy={CY} r="124" fill="none" stroke="#E4DDD1" strokeWidth="2" />
+        </g>
+      )}
 
       <g style={{ transform: `rotate(${spin}deg)`, transformOrigin: '150px 150px' }}>
         <g filter={`url(#${uid}s)`}>
@@ -110,10 +120,10 @@ export function Bagel({ type = 'sesame', spread = 'creme', topping = 'saumon', s
       <circle
         cx={CX}
         cy={CY}
-        r="70"
+        r="71"
         fill="none"
         stroke={SPREADS[spread].color || 'transparent'}
-        strokeWidth="50"
+        strokeWidth="44"
         filter={`url(#${uid}r)`}
         className="layer"
         style={{ opacity: spread === 'none' ? 0 : 1, transformOrigin: '150px 150px', transform: spread === 'none' ? 'scale(.7)' : 'scale(1)' }}
@@ -123,9 +133,14 @@ export function Bagel({ type = 'sesame', spread = 'creme', topping = 'saumon', s
       <g className="layer" style={{ opacity: topping === 'saumon' ? 1 : 0, transform: topping === 'saumon' ? 'scale(1)' : 'scale(.5)' }}>
         {salmon.map((p, i) => (
           <g key={i} transform={`translate(${p.x} ${p.y}) rotate(${p.deg + 90})`} filter={`url(#${uid}s)`}>
-            <ellipse rx="25" ry="14" fill="#FF8A6B" />
-            <path d="M-18 -4C-8 -10 8 0 18 -6M-20 3C-8 -2 8 8 20 2" stroke="#FFD0BD" strokeWidth="2.4" fill="none" strokeLinecap="round" />
+            <path d="M-34 -8Q-22 -20 -4 -14Q14 -22 32 -12Q38 0 30 12Q14 21 -2 15Q-20 21 -33 10Q-40 1 -34 -8Z" fill="#EC7552" fillOpacity=".96" />
+            <path d="M-28 -6Q-18 -14 -4 -9Q12 -16 26 -8Q30 1 24 8Q12 14 -2 10Q-16 15 -27 7Q-32 1 -28 -6Z" fill="#F48C68" />
+            <path d="M-20 -13Q-15 0 -21 14M-6 -12Q-1 1 -7 15M8 -15Q13 -1 7 14M21 -13Q26 0 20 12" stroke="#FFC9B0" strokeOpacity=".75" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+            <path d="M-30 4Q-14 -2 0 3Q16 8 30 0" stroke="#C9573A" strokeOpacity=".35" strokeWidth="2" fill="none" strokeLinecap="round" />
           </g>
+        ))}
+        {dill.map((d, i) => (
+          <path key={i} d={`M${d.x - 4} ${d.y}q2 -3 4 0q2 3 4 0`} transform={`rotate(${d.rot} ${d.x} ${d.y})`} stroke="#5E8A2E" strokeWidth="1.6" fill="none" strokeLinecap="round" />
         ))}
       </g>
 
@@ -163,7 +178,7 @@ export function Bagel({ type = 'sesame', spread = 'creme', topping = 'saumon', s
 export function Coffee() {
   return (
     <svg viewBox="0 0 160 160" aria-hidden="true">
-      <circle cx="78" cy="82" r="64" fill="#fff" stroke="#DDD" strokeWidth="2" />
+      <circle cx="78" cy="82" r="64" fill="#F4EFE6" stroke="#D9D2C6" strokeWidth="2" />
       <rect x="112" y="72" width="30" height="20" rx="10" fill="#fff" stroke="#CFCFCF" strokeWidth="2" />
       <circle cx="78" cy="80" r="44" fill="#fff" stroke="#CFCFCF" strokeWidth="2" />
       <circle cx="78" cy="80" r="35" fill="#2A170F" />
@@ -189,7 +204,7 @@ export function Berries() {
   const red = [[58, 58], [84, 94], [34, 92]]
   return (
     <svg viewBox="0 0 130 130" aria-hidden="true">
-      <circle cx="65" cy="65" r="60" fill="#fff" stroke="#DDD" strokeWidth="2" />
+      <circle cx="65" cy="65" r="60" fill="#F4EFE6" stroke="#D9D2C6" strokeWidth="2" />
       <circle cx="65" cy="65" r="48" fill="#F2F0EA" />
       {blue.map(([x, y], i) => (
         <circle key={i} cx={x + 4} cy={y + 4} r="9" fill="#3B4A8C" stroke="#2B3770" strokeWidth="1.5" />
